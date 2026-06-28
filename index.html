@@ -1,1 +1,119 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔒 نظام مقفل</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #000;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            user-select: none;
+        }
 
+        .container {
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #ff3333;
+        }
+
+        .pin-box {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .pin-box input {
+            width: 50px;
+            height: 50px;
+            font-size: 24px;
+            text-align: center;
+            background: #222;
+            border: 2px solid #444;
+            color: #fff;
+            border-radius: 5px;
+        }
+
+        .pin-box input:focus {
+            border-color: #ff3333;
+            outline: none;
+        }
+
+        .status {
+            color: #888;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container" id="lockScreen">
+    <h1>أدخل الرمز المكون من 4 خانات لفتح القفل</h1>
+    <div class="pin-box">
+        <input type="text" maxlength="1" class="pin-input">
+        <input type="text" maxlength="1" class="pin-input">
+        <input type="text" maxlength="1" class="pin-input">
+        <input type="text" maxlength="1" class="pin-input">
+    </div>
+    <div class="status" id="message">المحاولة مطلوبة للمتابعة...</div>
+</div>
+
+<script>
+    // الرمز الصحيح الافتراضي (يمكنك تغييره هنا)
+    const CORRECT_PIN = "1234"; 
+    const inputs = document.querySelectorAll('.pin-input');
+    const message = document.getElementById('message');
+
+    // التنقل التلقائي بين الخانات
+    inputs.forEach((input, index) => {
+        input.addEventListener('input', (e) => {
+            if (e.target.value.length === 1 && index < inputs.length - 1) {
+                inputs[index + 1].focus();
+            }
+            checkPin();
+        });
+
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Backspace' && !e.target.value && index > 0) {
+                inputs[index - 1].focus();
+            }
+        });
+    });
+
+    function checkPin() {
+        let currentPin = "";
+        inputs.forEach(input => currentPin += input.value);
+
+        if (currentPin.length === 4) {
+            if (currentPin === CORRECT_PIN) {
+                document.body.innerHTML = "<h1 style='color: #00ff00;'>🎉 تم فتح القفل بنجاح! مقلب خفيف.</h1>";
+                document.body.style.backgroundColor = "#111";
+            } else {
+                message.textContent = "الرمز خاطئ! حاول مجدداً.";
+                message.style.color = "#ff3333";
+                // مسح الخانات وإعادة التركيز للأولى
+                setTimeout(() => {
+                    inputs.forEach(input => input.value = "");
+                    inputs[0].focus();
+                }, 1000);
+            }
+        }
+    }
+</script>
+
+</body>
+</html>
